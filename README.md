@@ -12,4 +12,8 @@ here are the instruction to get started:
 3. Start **Coding in SnailScript right in front of you!**
 
 Copyright notes:
-Th assets we use is managed by Ocale™. Any other assets is not by us. We create everything *from scratch*.
+The assets we use is managed by Ocale™. Any other assets is not by us. We create everything *from scratch*.
+
+# SnailScript Version
+Current version: 1.0
+The IDE is mainly created in C#, and python is from *AI*
