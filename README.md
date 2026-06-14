@@ -15,5 +15,5 @@ Copyright notes:
 The assets we use is managed by Ocale™. Any other assets is not by us. We create everything *from scratch*.
 
 # SnailScript Version
-Current version: 1.0
+Current version: 1.1
 The IDE is mainly created in C#, and python is from *AI*
