@@ -1,64 +1,66 @@
-import difflib
+import re
 
-# -----------------------------
-# VALID SNAILSCRIPT COMMANDS
-# -----------------------------
-VALID_COMMANDS = [
-    "print",
-    "reint_load<p::{}<load_krnl.exe>",
-    "kernel<load{*}{}input::<>loader>",
-    "kernel::Loader.exe{**}"
-]
+class SnailScriptAI:
+    def __init__(self):
+        # Full list of SnailScript keyword commands
+        self.keyword_commands = [
+            r"print",
+            r"reint_load<p::\{\}<load_krnl\.exe>",
+            r"kernel<load\{\*\}\{\}input::<>loader>",
+            r"kernel::Loader\.exe\{\*\*\}",
+            r"load::operating_system<load_new::\{\}>function\{\*\}\{<void>\?:load\}",
+            r"Type<operating_system::load\?>::function\\load
 
-def analyze_snailscript(code: str):
-    errors = []
-    suggestions = []
+\[\*\]
 
-    lines = code.split("\n")
+"
+        ]
 
-    for line_number, raw_line in enumerate(lines, start=1):
-        line = raw_line.strip()
+    def analyze(self, code):
+        errors = []
+        lines = code.split("\n")
 
-        if line == "":
-            continue
+        for line_number, line in enumerate(lines, start=1):
+            stripped = line.strip()
 
-        # Check if the line matches a valid command exactly
-        if line not in VALID_COMMANDS:
-            errors.append(f"Line {line_number}: Unknown command '{line}'")
+            if stripped == "":
+                continue
 
-            # Suggest closest valid command
-            close = difflib.get_close_matches(line, VALID_COMMANDS, n=1)
-            if close:
-                suggestions.append(
-                    f"Line {line_number}: Did you mean '{close[0]}'?"
-                )
-            else:
-                suggestions.append(
-                    f"Line {line_number}: No similar command found."
-                )
+            # Check if line contains ANY known command
+            if not any(re.search(cmd, stripped) for cmd in self.keyword_commands):
+                errors.append(f"[Line {line_number}] Unknown or invalid command: '{stripped}'")
 
-    return errors, suggestions
+            # Check for missing semicolon
+            if not stripped.endswith(";") and not stripped.endswith("}"):
+                errors.append(f"[Line {line_number}] Missing semicolon")
+
+            # Basic variable declaration check
+            if stripped.startswith("var"):
+                if "=" not in stripped:
+                    errors.append(f"[Line {line_number}] Invalid variable declaration")
+
+            # Object creation syntax check
+            if "new" in stripped:
+                if "(" not in stripped or ")" not in stripped:
+                    errors.append(f"[Line {line_number}] Invalid object creation syntax")
+
+        return errors
 
 
-# -----------------------------
 # Example usage
-# -----------------------------
 if __name__ == "__main__":
-    print("Paste your SnailScript code below. End with an empty line.\n")
+    code = """
+var system_sandbox = new sandbox();
+system_sandbox.load_sandbox();
+reint_load<p::{}<load_krnl.exe>;
+"""
 
-    user_code = []
-    while True:
-        line = input()
-        if line.strip() == "":
-            break
-        user_code.append(line)
+    ai = SnailScriptAI()
+    result = ai.analyze(code)
 
-    code = "\n".join(user_code)
-
-    errors, suggestions = analyze_snailscript(code)
-
-    print("\n--- ERRORS ---")
-    print("\n".join(errors) if errors else "No errors found.")
-
-    print("\n--- SUGGESTIONS ---")
-    print("\n".join(suggestions) if suggestions else "No suggestions.")
+    if not result:
+        print("No errors found. SnailScript is valid.")
+    else:
+        print("Errors detected:")
+        for err in result:
+            print(err)
