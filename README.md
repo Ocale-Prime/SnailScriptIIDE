@@ -15,5 +15,7 @@ Copyright notes:
 The assets we use is managed by Ocale™. Any other assets is not by us. We create everything *from scratch*.
 
 # SnailScript Version
-Current version: 1.1
+Current version: 1.3
 The IDE is mainly created in C#, and python is from *AI*
+
+Update: Assembly switch + C++ code interfaces. *Current*: ASM system API and initialization of rust style syntax[idstd::load()]
